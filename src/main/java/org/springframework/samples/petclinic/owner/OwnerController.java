@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Juergen Hoeller
@@ -103,8 +103,8 @@ class OwnerController {
 
     @GetMapping("/owners/{ownerId}/edit")
     public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-        Owner owner = this.owners.findById(ownerId);
-        model.addAttribute(owner);
+        Optional<Owner> owner = this.owners.findById(ownerId);
+        model.addAttribute(owner.get());
         return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
     }
 
@@ -125,11 +125,12 @@ class OwnerController {
      * @param ownerId the ID of the owner to display
      * @return a ModelMap with the model attributes for the view
      */
+    /* TODO
     @GetMapping("/owners/{ownerId}")
     public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
         ModelAndView mav = new ModelAndView("owners/ownerDetails");
         mav.addObject(this.owners.findById(ownerId));
         return mav;
     }
-
+    */
 }

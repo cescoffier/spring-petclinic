@@ -17,11 +17,7 @@ package org.springframework.samples.petclinic.visit;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -45,7 +41,6 @@ public class Visit extends BaseEntity {
     @NotEmpty
     @Column(name = "description")
     private String description;
-
 
     @Column(name = "pet_id")
     private Integer petId;

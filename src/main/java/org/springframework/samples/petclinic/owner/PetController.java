@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * @author Juergen Hoeller
@@ -52,7 +53,7 @@ class PetController {
 
     @ModelAttribute("owner")
     public Owner findOwner(@PathVariable("ownerId") int ownerId) {
-        return this.owners.findById(ownerId);
+        return this.owners.findById(ownerId).get();
     }
 
     @InitBinder("owner")
@@ -90,8 +91,8 @@ class PetController {
 
     @GetMapping("/pets/{petId}/edit")
     public String initUpdateForm(@PathVariable("petId") int petId, ModelMap model) {
-        Pet pet = this.pets.findById(petId);
-        model.put("pet", pet);
+        Optional<Pet> pet = this.pets.findById(petId);
+        model.put("pet", pet.get());
         return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
     }
 
