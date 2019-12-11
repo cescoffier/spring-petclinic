@@ -60,9 +60,9 @@ public class Pet extends NamedEntity {
     @JoinColumn(name = "type_id")
     private PetType type;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private Owner owner;
+//    @ManyToOne
+//    @JoinColumn(name = "owner_id")
+//    private Owner owner;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "petId", fetch = FetchType.EAGER)
     private Set<Visit> visits = new LinkedHashSet<>();
@@ -83,13 +83,13 @@ public class Pet extends NamedEntity {
         this.type = type;
     }
 
-    public Owner getOwner() {
-        return this.owner;
-    }
-
-    protected void setOwner(Owner owner) {
-        this.owner = owner;
-    }
+//    public Owner getOwner() {
+//        return this.owner;
+//    }
+//
+//    protected void setOwner(Owner owner) {
+//        this.owner = owner;
+//    }
 
     protected Set<Visit> getVisitsInternal() {
         if (this.visits == null) {

@@ -1,14 +1,21 @@
 package org.springframework.samples.petclinic.system;
 
 
-import org.springframework.stereotype.Controller;
+import io.quarkus.qute.Template;
+import io.quarkus.qute.TemplateInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-class WelcomeController {
+@RestController
+public class WelcomeController {
 
-    @GetMapping("/")
-    public String welcome() {
-        return "welcome";
+    @Autowired
+    Template welcome;
+
+    @GetMapping(produces= MediaType.TEXT_HTML_VALUE)
+    public TemplateInstance welcome() {
+        return welcome.data("name", "Quarkus");
     }
 }
