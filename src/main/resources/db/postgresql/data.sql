@@ -33,19 +33,19 @@ INSERT INTO owners VALUES (8, 'Maria', 'Escobito', '345 Maple St.', 'Madison', '
 INSERT INTO owners VALUES (9, 'David', 'Schroeder', '2749 Blackhawk Trail', 'Madison', '6085559435');
 INSERT INTO owners VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Waunakee', '6085555487');
 
-INSERT INTO pets VALUES (1, 'Leo', '2000-09-07', 1, 1);
-INSERT INTO pets VALUES (2, 'Basil', '2002-08-06', 2, 6);
-INSERT INTO pets VALUES (3, 'Rosy', '2001-04-17', 3, 2);
-INSERT INTO pets VALUES (4, 'Jewel', '2000-03-07', 3, 2);
-INSERT INTO pets VALUES (5, 'Iggy', '2000-11-30', 4, 3);
-INSERT INTO pets VALUES (6, 'George', '2000-01-20', 5, 4);
-INSERT INTO pets VALUES (7, 'Samantha', '1995-09-04', 6, 1);
-INSERT INTO pets VALUES (8, 'Max', '1995-09-04', 6, 1);
-INSERT INTO pets VALUES (9, 'Lucky', '1999-08-06', 7, 5);
-INSERT INTO pets VALUES (10, 'Mulligan', '1997-02-24', 8, 2);
-INSERT INTO pets VALUES (11, 'Freddy', '2000-03-09', 9, 5);
-INSERT INTO pets VALUES (12, 'Lucky', '2000-06-24', 10, 2);
-INSERT INTO pets VALUES (13, 'Sly', '2002-06-08', 10, 1);
+INSERT INTO pets VALUES (1, 'Leo', '2000-09-07', 1);
+INSERT INTO pets VALUES (2, 'Basil', '2002-08-06', 6);
+INSERT INTO pets VALUES (3, 'Rosy', '2001-04-17', 2);
+INSERT INTO pets VALUES (4, 'Jewel', '2000-03-07', 2);
+INSERT INTO pets VALUES (5, 'Iggy', '2000-11-30', 3);
+INSERT INTO pets VALUES (6, 'George', '2000-01-20', 4);
+INSERT INTO pets VALUES (7, 'Samantha', '1995-09-04', 1);
+INSERT INTO pets VALUES (8, 'Max', '1995-09-04', 1);
+INSERT INTO pets VALUES (9, 'Lucky', '1999-08-06', 5);
+INSERT INTO pets VALUES (10, 'Mulligan', '1997-02-24', 2);
+INSERT INTO pets VALUES (11, 'Freddy', '2000-03-09', 5);
+INSERT INTO pets VALUES (12, 'Lucky', '2000-06-24', 2);
+INSERT INTO pets VALUES (13, 'Sly', '2002-06-08', 1);
 
 INSERT INTO visits VALUES (1, '2010-03-04', 'rabies shot', 7);
 INSERT INTO visits VALUES (2, '2011-03-04', 'rabies shot', 8);
