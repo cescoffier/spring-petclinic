@@ -3,7 +3,6 @@ package org.springframework.samples.petclinic.system;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -20,9 +19,9 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
 
     @Override
     public Response toResponse(RuntimeException exception) {
-        return Response.status(Response.Status.BAD_REQUEST)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_HTML)
-                .entity(exception.getMessage())
+        return Response.ok() // ok needed to properly render HTML response
+                .entity(error.data("message", exception.getMessage()).render())
+                .type(MediaType.TEXT_HTML)
                 .build();
     }
 }
