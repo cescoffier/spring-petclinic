@@ -19,10 +19,7 @@ import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.qute.api.ResourcePath;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -85,8 +82,8 @@ public class OwnerController {
     Template ownerDetailsTemplate;
 
     @GetMapping(path = "/owners/find", produces= MediaType.TEXT_HTML_VALUE)
-    public TemplateInstance initFindForm() {
-        return findOwnersTemplate.data("active", "findOwners");
+    public TemplateInstance initFindForm(@CookieValue String result) {
+        return findOwnersTemplate.data("active", "findOwners").data("result", result);
     }
 
     @GetMapping(path = "/owners", produces= MediaType.TEXT_HTML_VALUE)
@@ -105,9 +102,17 @@ public class OwnerController {
 
         if (results.iterator().hasNext() == false) {
             // no owners found
-            //result.rejectValue("lastName", "notFound", "not found");
+            String forwardPath = "/owners/find";
+
+            // Store feedback for user in a temporary cookie
+            HttpCookie cookie = ResponseCookie.from("result", "No owners were found! Please try again.")
+                    .path(forwardPath)
+                    .maxAge(30)
+                    .build();
+
             return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
-                    .header(HttpHeaders.LOCATION, "/owners/find")
+                    .header(HttpHeaders.LOCATION, forwardPath)
+                    .header(HttpHeaders.SET_COOKIE,cookie.toString())
                     .build();
         } else if (results instanceof Collection && ((Collection)results).size() == 1) {
             // 1 owner found
@@ -117,7 +122,6 @@ public class OwnerController {
                     .build();
         } else {
             // multiple owners found
-            //model.put("selections", results);
             return ResponseEntity.ok(
                     ownersListTemplate
                             .data("active", "findOwners")

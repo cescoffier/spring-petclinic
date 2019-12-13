@@ -3,6 +3,12 @@
 {#body}
   <h2>Find Owners</h2>
 
+  {#if result != NOT_FOUND}
+  <div class="alert alert-warning">
+    {result}
+  </div>
+  {/if}
+
   <form action="/owners" method="get"
     class="form-horizontal" id="search-owner-form">
     <div class="form-group">
