@@ -15,20 +15,19 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import io.quarkus.qute.Template;
+import io.quarkus.qute.TemplateInstance;
+import io.quarkus.qute.api.ResourcePath;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.validation.Valid;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author Juergen Hoeller
@@ -36,8 +35,8 @@ import java.util.Optional;
  * @author Arjen Poutsma
  * @author Michael Isvy
  */
-@Controller
-class OwnerController {
+@RestController
+public class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
@@ -47,12 +46,13 @@ class OwnerController {
     public OwnerController(OwnerRepository clinicService) {
         this.owners = clinicService;
     }
-
+/* TODO: Generates non-specific error
     @InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
     }
-
+*/
+/*
     @GetMapping("/owners/new")
     public String initCreationForm(Map<String, Object> model) {
         Owner owner = new Owner();
@@ -69,13 +69,63 @@ class OwnerController {
             return "redirect:/owners/" + owner.getId();
         }
     }
+*/
 
-    @GetMapping("/owners/find")
-    public String initFindForm(Map<String, Object> model) {
-        model.put("owner", new Owner());
-        return "owners/findOwners";
+// TODO: No mapping for Map<String, Object> model
+// RESTEASY003200: Could not find message body reader for type: interface java.util.Map of content type: */
+
+
+    @ResourcePath("owners/findOwners.html")
+    Template findOwnersTemplate;
+
+    @ResourcePath("owners/ownersList.html")
+    Template ownersListTemplate;
+
+    @ResourcePath("owners/ownerDetails.html")
+    Template ownerDetailsTemplate;
+
+    @GetMapping(path = "/owners/find", produces= MediaType.TEXT_HTML_VALUE)
+    public TemplateInstance initFindForm() {
+        return findOwnersTemplate.data("active", "findOwners");
     }
 
+    @GetMapping(path = "/owners", produces= MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity processFindForm(@RequestParam String lastName) { //Owner owner
+
+        Iterable<Owner> results;
+
+        // allow parameterless GET request for /owners to return all records
+        if (lastName == null || lastName.trim().isEmpty()) {
+            results = this.owners.findAll();
+        }
+        else {
+            // find owners by last name
+            results = this.owners.findByLastNameContaining(lastName);
+        }
+
+        if (results.iterator().hasNext() == false) {
+            // no owners found
+            //result.rejectValue("lastName", "notFound", "not found");
+            return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
+                    .header(HttpHeaders.LOCATION, "/owners/find")
+                    .build();
+        } else if (results instanceof Collection && ((Collection)results).size() == 1) {
+            // 1 owner found
+            Owner owner = results.iterator().next();
+            return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
+                    .header(HttpHeaders.LOCATION, "/owners/" + owner.getId())
+                    .build();
+        } else {
+            // multiple owners found
+            //model.put("selections", results);
+            return ResponseEntity.ok(
+                    ownersListTemplate
+                            .data("active", "findOwners")
+                            .data("owners", results).render()
+            );
+        }
+    }
+/*
     @GetMapping("/owners")
     public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
 
@@ -118,7 +168,7 @@ class OwnerController {
             return "redirect:/owners/{ownerId}";
         }
     }
-
+*/
     /**
      * Custom handler for displaying an owner.
      *

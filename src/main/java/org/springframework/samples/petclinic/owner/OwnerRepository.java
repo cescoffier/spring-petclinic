@@ -40,8 +40,7 @@ public interface OwnerRepository extends CrudRepository<Owner, Integer> {
      * @return a Collection of matching {@link Owner}s (or an empty Collection if none
      * found)
      */
-    @Query("SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets WHERE owner.lastName LIKE :lastName%")
     @Transactional(readOnly = true)
-    Collection<Owner> findByLastName(@Param("lastName") String lastName);
+    Collection<Owner> findByLastNameContaining(String lastName);
 
 }

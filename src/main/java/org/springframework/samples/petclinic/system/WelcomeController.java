@@ -16,6 +16,6 @@ public class WelcomeController {
 
     @GetMapping(produces= MediaType.TEXT_HTML_VALUE)
     public TemplateInstance welcome() {
-        return welcome.data("name", "Quarkus");
+        return welcome.data("active", "welcome");
     }
 }

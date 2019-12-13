@@ -58,7 +58,7 @@ public class Owner extends Person {
     @Digits(fraction = 0, integer = 10)
     private String telephone;
 
-    @OneToMany(cascade = CascadeType.ALL)//, mappedBy = "owner")
+    @OneToMany(cascade = CascadeType.ALL) //, mappedBy = "owner") //https://github.com/quarkusio/quarkus/issues/6091
     private Set<Pet> pets;
 
 
@@ -107,7 +107,7 @@ public class Owner extends Person {
         if (pet.isNew()) {
             getPetsInternal().add(pet);
         }
-//        pet.setOwner(this);
+        pet.setOwner(this);
     }
 
     /**
