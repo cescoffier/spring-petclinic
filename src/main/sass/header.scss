@@ -1,6 +1,8 @@
+@import "constants.scss";
+
 .navbar {
-  border-top: 4px solid #6db33f;
-  background-color: #34302d;
+  border-top: 4px solid $spring-green;
+  background-color: $spring-brown;
   margin-bottom: 0px;
   border-bottom: 0;
   border-left: 0;
@@ -8,10 +10,10 @@
 }
 
 .navbar a.navbar-brand {
-  background: url("../images/spring-logo-dataflow.png") -1px -1px no-repeat;
-  margin: 12px 0 6px;
-  width: 229px;
-  height: 46px;
+  background: url("/images/quarkus_logo_horizontal_rgb_600px.png") -1px -1px no-repeat;
+  background-size: contain;
+  margin: 18px 0 6px;
+  width: 250px;
   display: inline-block;
   text-decoration: none;
   padding: 0;
@@ -21,7 +23,6 @@
   display: block;
   width: 229px;
   height: 46px;
-  background: url("../images/spring-logo-dataflow.png") -1px -48px no-repeat;
   opacity: 0;
   -moz-transition: opacity 0.12s ease-in-out;
   -webkit-transition: opacity 0.12s ease-in-out;
@@ -55,8 +56,8 @@
   margin-bottom: 0;
 }
 .navbar li:hover > a {
-  color: #eeeeee;
-  background-color: #6db33f;
+  color: #eeeeee !important;
+  background-color: $spring-green-hover !important;
 }
 
 .navbar-toggle {

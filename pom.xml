@@ -169,6 +169,15 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>nl.geodienstencentrum.maven</groupId>
+          <artifactId>sass-maven-plugin</artifactId>
+          <version>3.7.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>io.quarkus</groupId>
@@ -194,6 +203,11 @@
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemProperties>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>nl.geodienstencentrum.maven</groupId>
+        <artifactId>sass-maven-plugin</artifactId>
+        <version>3.7.2</version>
       </plugin>
     </plugins>
   </build>
@@ -232,6 +246,16 @@
       </properties>
     </profile>
   </profiles>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>nl.geodienstencentrum.maven</groupId>
+        <artifactId>sass-maven-plugin</artifactId>
+        <version>3.7.2</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <!-- Apache 2 license -->
   <licenses>
