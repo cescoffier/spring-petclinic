@@ -21,18 +21,12 @@ import io.quarkus.qute.api.ResourcePath;
 import org.jboss.resteasy.annotations.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.Validator;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.Collection;
 import java.util.Set;
 
@@ -153,14 +147,24 @@ public class OwnerController {
         return createOrUpdateOwnerForm.data("owner", owner);
     }
 
-    @PostMapping(path = "/owners/{ownerId}/edit", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE })
-    public ResponseEntity processUpdateOwnerForm(@Valid @RequestBody Owner owner, @PathVariable int ownerId) {
+    /**
+     * Because this method consumes both JSON and form data, the form request data will be converted to JSON by the
+     * FormDataToJsonFilter and processed according to the object mapping implementation.
+     * @param owner
+     * @param ownerId
+     * @return
+     */
+    @PostMapping(path = "/owners/{ownerId}/edit", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity processUpdateOwnerForm(Owner owner, @PathVariable int ownerId) {
 
         try {
             validator.validate(owner);
             //return new Result("Book is valid! It was validated by service method validation.");
         } catch (ConstraintViolationException e) {
             Set<ConstraintViolation<?>> exceptions = e.getConstraintViolations();
+
+
+            throw new RuntimeException((e));
 
             //exceptions.iterator().next().
             //return new Result(e.getConstraintViolations());
