@@ -1,13 +1,14 @@
 package org.springframework.samples.petclinic.system;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.vertx.core.http.HttpServerRequest;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 
+import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
@@ -34,6 +35,8 @@ import java.util.Map;
  *   @PostMapping(path = "/owners/{ownerId}/edit", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.APPLICATION_JSON_VALUE })
  *   public ResponseEntity processUpdateOwnerForm(Owner owner, @PathVariable int ownerId) {
  * </pre>
+ *
+ * Feature Request: https://github.com/quarkusio/quarkus/issues/6234
  */
 @Provider
 public class FormDataToJsonFilter implements ContainerRequestFilter {
@@ -45,6 +48,9 @@ public class FormDataToJsonFilter implements ContainerRequestFilter {
 
     @Context
     HttpServerRequest request;
+
+    @Inject
+    ObjectMapper objectMapper;
 
     @Override
     public void filter(ContainerRequestContext context) {
@@ -69,18 +75,25 @@ public class FormDataToJsonFilter implements ContainerRequestFilter {
         if(context.getMethod().equals("POST")
                 && hasForm && hasJson
                 && context.getMediaType().equals(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) {
+
             // Pull out the POST query string (the entity) from the request body
            String entity = convertStreamToString(context.getEntityStream());
+
            // Decode the query string and convert to a Map
            Map<String, List<String>> params = new QueryStringDecoder(entity, false).parameters();
-           // Create an ObjectMapper that flattens 1 item arrays when serialized
-           ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);
+
+           // Make sure arrays are unwrapped appropriately
+           objectMapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+
            try { //  Write out the JSON string from the Map
-                String jsonResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(params);
+                String jsonResult = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(params);
+
                 // Write the bytes for the JSON back into the request
                 context.setEntityStream(new ByteArrayInputStream(jsonResult.getBytes()));
+
                 // Change the Content-Type so the request can be correctly consumed
                 context.getHeaders().putSingle("Content-Type", MediaType.APPLICATION_JSON);
+
                 // Now the HTTP POST request will be processed as JSON data rather than form data.
             } catch (JsonProcessingException e) {
                 LOG.error("Error converting POST body to JSON object.", e);
