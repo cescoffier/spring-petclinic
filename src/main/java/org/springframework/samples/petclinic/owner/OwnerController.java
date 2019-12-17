@@ -23,8 +23,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import java.util.Collection;
 import java.util.Set;
@@ -38,7 +36,6 @@ import java.util.Set;
 @RestController
 public class OwnerController {
 
-    private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
 
 
@@ -118,7 +115,7 @@ public class OwnerController {
                     .maxAge(30)
                     .build();
 
-            return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
                     .header(HttpHeaders.LOCATION, forwardPath)
                     .header(HttpHeaders.SET_COOKIE,cookie.toString())
                     .build();
@@ -126,7 +123,7 @@ public class OwnerController {
         } else if (results instanceof Collection && ((Collection)results).size() == 1) {
             // 1 owner found
             Owner owner = results.iterator().next();
-            return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
                     .header(HttpHeaders.LOCATION, "/owners/" + owner.getId())
                     .build();
 
@@ -153,37 +150,33 @@ public class OwnerController {
      * @param ownerId
      * @return
      */
-    @PostMapping(path = "/owners/{ownerId}/edit", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    @PostMapping(path = "/owners/{ownerId}/edit",
+            consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.APPLICATION_JSON_VALUE },
+            produces= MediaType.TEXT_HTML_VALUE)
     public ResponseEntity processUpdateOwnerForm(Owner owner, @PathVariable int ownerId) {
 
-        try {
-            validator.validate(owner);
-            //return new Result("Book is valid! It was validated by service method validation.");
-        } catch (ConstraintViolationException e) {
-            Set<ConstraintViolation<?>> exceptions = e.getConstraintViolations();
+        Set<ConstraintViolation<Owner>> results = validator.validate(owner);
+        TemplateInstance templateInstance = createOrUpdateOwnerForm.instance();
 
+        if(!results.isEmpty()) {
+            templateInstance.data("hasErrors", true);
 
-            throw new RuntimeException((e));
+            for (ConstraintViolation<Owner> violation : results) {
+                String property = violation.getPropertyPath().toString();
+                String message = violation.getMessage();
+                templateInstance.data(property + "Error", message);
+            }
 
-            //exceptions.iterator().next().
-            //return new Result(e.getConstraintViolations());
+            templateInstance.data("owner", owner);
+            return ResponseEntity.ok(templateInstance.render());
         }
-
-
-        System.out.println(owner.getAddress());
-
-       /* if (result.hasErrors()) {
-            return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-        } else {
-            Owner owner = new Owner();
+        else {
             owner.setId(ownerId);
             this.owners.save(owner);
-            return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
                     .header(HttpHeaders.LOCATION, "/owners/" + owner.getId())
-                    .build();*/
-
-            return ResponseEntity.ok().build();
-       // }
+                    .build();
+        }
     }
 
     /**
