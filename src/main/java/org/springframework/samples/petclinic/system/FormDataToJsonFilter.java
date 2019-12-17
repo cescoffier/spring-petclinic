@@ -65,7 +65,7 @@ public class FormDataToJsonFilter implements ContainerRequestFilter {
             }
         }
 
-        // For all form POST requests that have MediaType of both Form and JSON
+        // For all form POST requests that have consumes both Form and JSON and content of APPLICATION_FORM_URLENCODED_TYPE
         if(context.getMethod().equals("POST")
                 && hasForm && hasJson
                 && context.getMediaType().equals(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) {
