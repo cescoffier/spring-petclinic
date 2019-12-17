@@ -82,7 +82,7 @@ public class FormDataToJsonFilter implements ContainerRequestFilter {
            // Decode the query string and convert to a Map
            Map<String, List<String>> params = new QueryStringDecoder(entity, false).parameters();
 
-           // Make sure arrays are unwrapped appropriately
+           // Make sure arrays are unwrapped appropriately with global objectMapper when JSON is converted to POJO
            objectMapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
 
            try { //  Write out the JSON string from the Map
