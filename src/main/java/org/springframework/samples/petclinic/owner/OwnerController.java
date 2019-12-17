@@ -168,6 +168,7 @@ public class OwnerController {
             }
 
             templateInstance.data("owner", owner);
+            templateInstance.data("active", "findOwners");
             return ResponseEntity.ok(templateInstance.render());
         }
         else {
