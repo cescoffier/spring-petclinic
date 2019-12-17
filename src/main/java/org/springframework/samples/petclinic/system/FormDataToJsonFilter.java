@@ -66,7 +66,9 @@ public class FormDataToJsonFilter implements ContainerRequestFilter {
         }
 
         // For all form POST requests that have MediaType of both Form and JSON
-        if(context.getMethod().equals("POST") && hasForm && hasJson) {
+        if(context.getMethod().equals("POST")
+                && hasForm && hasJson
+                && context.getMediaType().equals(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) {
             // Pull out the POST query string (the entity) from the request body
            String entity = convertStreamToString(context.getEntityStream());
            // Decode the query string and convert to a Map

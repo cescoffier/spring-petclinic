@@ -18,7 +18,6 @@ package org.springframework.samples.petclinic.owner;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.qute.api.ResourcePath;
-import org.jboss.resteasy.annotations.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
