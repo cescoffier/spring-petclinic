@@ -18,13 +18,23 @@ package org.springframework.samples.petclinic.owner;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.qute.api.ResourcePath;
+import org.jboss.resteasy.annotations.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.Validator;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MultivaluedMap;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Juergen Hoeller
@@ -71,6 +81,8 @@ public class OwnerController {
 // TODO: No mapping for Map<String, Object> model
 // RESTEASY003200: Could not find message body reader for type: interface java.util.Map of content type: */
 
+    @Inject
+    Validator validator;
 
     @ResourcePath("owners/findOwners.html")
     Template findOwnersTemplate;
@@ -81,13 +93,16 @@ public class OwnerController {
     @ResourcePath("owners/ownerDetails.html")
     Template ownerDetailsTemplate;
 
+    @ResourcePath("owners/createOrUpdateOwnerForm")
+    Template createOrUpdateOwnerForm;
+
     @GetMapping(path = "/owners/find", produces= MediaType.TEXT_HTML_VALUE)
     public TemplateInstance initFindForm(@CookieValue String result) {
         return findOwnersTemplate.data("active", "findOwners").data("result", result);
     }
 
     @GetMapping(path = "/owners", produces= MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity processFindForm(@RequestParam String lastName) { //Owner owner
+    public ResponseEntity processFindForm(@RequestParam String lastName) {
 
         Iterable<Owner> results;
 
@@ -114,77 +129,71 @@ public class OwnerController {
                     .header(HttpHeaders.LOCATION, forwardPath)
                     .header(HttpHeaders.SET_COOKIE,cookie.toString())
                     .build();
+
         } else if (results instanceof Collection && ((Collection)results).size() == 1) {
             // 1 owner found
             Owner owner = results.iterator().next();
             return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
                     .header(HttpHeaders.LOCATION, "/owners/" + owner.getId())
                     .build();
+
         } else {
             // multiple owners found
             return ResponseEntity.ok(
                     ownersListTemplate
                             .data("active", "findOwners")
-                            .data("owners", results).render()
+                            .data("owners", results).render() // Render the response and return it
             );
         }
     }
-/*
-    @GetMapping("/owners")
-    public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
 
-        // allow parameterless GET request for /owners to return all records
-        if (owner.getLastName() == null) {
-            owner.setLastName(""); // empty string signifies broadest possible search
-        }
-
-        // find owners by last name
-        Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
-        if (results.isEmpty()) {
-            // no owners found
-            result.rejectValue("lastName", "notFound", "not found");
-            return "owners/findOwners";
-        } else if (results.size() == 1) {
-            // 1 owner found
-            owner = results.iterator().next();
-            return "redirect:/owners/" + owner.getId();
-        } else {
-            // multiple owners found
-            model.put("selections", results);
-            return "owners/ownersList";
-        }
+    @GetMapping(path = "/owners/{ownerId}/edit", produces= MediaType.TEXT_HTML_VALUE)
+    public TemplateInstance initUpdateOwnerForm(@PathVariable("ownerId") int ownerId) {
+        Owner owner = this.owners.findById(ownerId).get();
+        return createOrUpdateOwnerForm.data("owner", owner);
     }
 
-    @GetMapping("/owners/{ownerId}/edit")
-    public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-        Optional<Owner> owner = this.owners.findById(ownerId);
-        model.addAttribute(owner.get());
-        return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-    }
+    @PostMapping(path = "/owners/{ownerId}/edit", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE })
+    public ResponseEntity processUpdateOwnerForm(@Valid @RequestBody Owner owner, @PathVariable int ownerId) {
 
-    @PostMapping("/owners/{ownerId}/edit")
-    public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId) {
-        if (result.hasErrors()) {
+        try {
+            validator.validate(owner);
+            //return new Result("Book is valid! It was validated by service method validation.");
+        } catch (ConstraintViolationException e) {
+            Set<ConstraintViolation<?>> exceptions = e.getConstraintViolations();
+
+            //exceptions.iterator().next().
+            //return new Result(e.getConstraintViolations());
+        }
+
+
+        System.out.println(owner.getAddress());
+
+       /* if (result.hasErrors()) {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {
+            Owner owner = new Owner();
             owner.setId(ownerId);
             this.owners.save(owner);
-            return "redirect:/owners/{ownerId}";
-        }
+            return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
+                    .header(HttpHeaders.LOCATION, "/owners/" + owner.getId())
+                    .build();*/
+
+            return ResponseEntity.ok().build();
+       // }
     }
-*/
+
     /**
      * Custom handler for displaying an owner.
      *
      * @param ownerId the ID of the owner to display
      * @return a ModelMap with the model attributes for the view
      */
-    /* TODO
-    @GetMapping("/owners/{ownerId}")
-    public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
-        ModelAndView mav = new ModelAndView("owners/ownerDetails");
-        mav.addObject(this.owners.findById(ownerId));
-        return mav;
+    @GetMapping(path = "/owners/{ownerId}", produces= MediaType.TEXT_HTML_VALUE)
+    public TemplateInstance showOwner(@PathVariable("ownerId") int ownerId) {
+        Owner owner = this.owners.findById(ownerId).get();
+        return ownerDetailsTemplate
+                .data("active", "findOwners")
+                .data("owner",owner);
     }
-    */
 }

@@ -32,40 +32,8 @@
     <quarkus.version>999-SNAPSHOT</quarkus.version>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <url>https://repo.maven.apache.org/maven2</url>
-    </repository>
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-  </repositories>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <url>https://repo.maven.apache.org/maven2</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </pluginRepository>
-  </pluginRepositories>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>sonatype-nexus-release</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>

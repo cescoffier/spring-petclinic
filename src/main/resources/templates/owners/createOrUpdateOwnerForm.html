@@ -1,9 +1,10 @@
-<html xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
+{#include fragments/layout.html}
 
-<body>
+{#body}
 
   <h2>Owner</h2>
+
+  {#with owner}
   <form class="form-horizontal" id="add-owner-form" method="post">
     <div class="form-group has-feedback">
 
@@ -25,9 +26,12 @@
     </div>
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button class="btn btn-default" type="submit">Add Owner</button>
+        <button class="btn btn-default" type="submit">Add or Update Owner</button>
       </div>
     </div>
   </form>
-</body>
-</html>
+  {/with}
+
+{/body}
+
+{/include}

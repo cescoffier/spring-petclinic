@@ -19,6 +19,9 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
 
     @Override
     public Response toResponse(RuntimeException exception) {
+
+        exception.printStackTrace();
+
         return Response.ok() // ok needed to properly render HTML response
                 .entity(error.data("message", exception.getMessage()).render())
                 .type(MediaType.TEXT_HTML)
