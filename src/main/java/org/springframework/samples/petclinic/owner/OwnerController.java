@@ -68,9 +68,6 @@ public class OwnerController {
     }
 */
 
-// TODO: No mapping for Map<String, Object> model
-// RESTEASY003200: Could not find message body reader for type: interface java.util.Map of content type: */
-
     @Inject
     Validator validator;
 
